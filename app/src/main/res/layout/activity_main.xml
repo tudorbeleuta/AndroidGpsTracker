@@ -24,4 +24,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="107dp"
         android:text="Log my coordinates" />
+
+    <Button
+        android:id="@+id/uploader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logger"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:text="Upload to server" />
 </RelativeLayout>

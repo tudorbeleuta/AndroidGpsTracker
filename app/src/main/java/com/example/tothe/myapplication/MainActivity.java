@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 import com.example.tothe.myapplication.common.HttpCommunicator;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     protected String ageOfDgpsData;
     protected String dgpsId;
     protected int satellitesUsedInFix;
+    File loggedFile;
     //private static final Logger LOG = new Logg;
     String listenerName = "test";
     GpsLocationListener locListener;
@@ -49,9 +51,9 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
 
-        final Button button = (Button) findViewById(R.id.logger);
-        if (button != null) {
-            button.setOnClickListener(new View.OnClickListener() {
+        final Button buttonLogger = (Button) findViewById(R.id.logger);
+        if (buttonLogger != null) {
+            buttonLogger.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     if (!isActive) {
                         stasrtGpsListen();
@@ -63,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+
+        final Button buttonUploader = (Button) findViewById(R.id.uploader);
+        if (buttonUploader != null) {
+            buttonUploader.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    logToServer();
+                }
+            });
+        }
+
 
 
     }
@@ -76,18 +88,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopGpsListen() {
 
-        File loggedFile = locListener.stopGpsListen();
+        loggedFile = locListener.stopGpsListen();
         locListener = null;
-
+        Toast.makeText(MainActivity.getAppContext(), loggedFile.getName(), Toast.LENGTH_SHORT).show();
     }
 
 
-    private void attemptSend(String message) {
-
-        if (TextUtils.isEmpty(message)) {
-            return;
+    private void logToServer() {
+        if (loggedFile != null) {
+            HttpCommunicator communicator = new HttpCommunicator();
+            communicator.execute(loggedFile);
+            Toast.makeText(MainActivity.getAppContext(), communicator.getStatus().toString(), Toast.LENGTH_SHORT).show();
         }
 
-        //mSocket.emit("buttonMessage", message);
     }
 }
