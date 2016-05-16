@@ -6,6 +6,7 @@ import android.os.Environment;
 import com.example.tothe.myapplication.common.GpxHelper;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class LogfileManager {
 
     JSONArray log_data;
     File logFile;
+
     boolean init;
 
     public LogfileManager() {
@@ -53,6 +55,14 @@ public class LogfileManager {
             //GpxHelper.writeToFile(logFile,GpxHelper.getTrackPointXml(loc));
         } catch (IOException e) {
             // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void setStats(JSONObject stats) {
+        try {
+            GpxHelper.writeToFile(logFile, "];\n" + stats.toString());
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

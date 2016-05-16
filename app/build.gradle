@@ -29,6 +29,6 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     compile 'com.github.nkzawa:socket.io-client:0.3.0'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
-
+    compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
+    compile 'com.loopj.android:android-async-http:1.4.9'
 }

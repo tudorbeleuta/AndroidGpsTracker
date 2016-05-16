@@ -4,33 +4,237 @@
     android:id="@+id/u"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/bike_front"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.tothe.myapplication.MainActivity">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    android:background="@drawable/bike_front">
 
     <Button
         android:id="@+id/logger"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="107dp"
-        android:text="Log my coordinates" />
+        android:layout_marginTop="55dp"
+        android:text="Log my coords" />
 
     <Button
         android:id="@+id/uploader"
+        style="@style/Widget.AppCompat.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:text="Upload to server" />
+
+    <TableLayout
+        android:id="@+id/stats"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/logger"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="86dp"
-        android:text="Upload to server" />
+        android:animateLayoutChanges="true"
+        android:background="@color/colorPrimary"
+        android:visibility="invisible">
+
+        <TableRow>
+
+            <TextView android:text="Yeah" />
+
+            <TextView />
+
+            <TextView
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="100dp"
+                android:text="Nope" />
+        </TableRow>
+
+        <RadioGroup
+            android:id="@+id/safe"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/safeT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerHorizontal="true"
+
+                android:layout_centerVertical="true"
+                android:text="          safe             " />
+
+            <RadioButton
+                android:id="@+id/safeF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeT"
+                android:layout_alignStart="@+id/safeT"
+                android:layout_below="@+id/safeT"
+                android:text="" />
+
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/crowded"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/crowdedT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="        crowded       " />
+
+            <RadioButton
+                android:id="@+id/crowdedF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeT"
+                android:layout_alignStart="@+id/safeT"
+                android:layout_below="@+id/safeT"
+                android:text="" />
+
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/fast"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/fastT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="            fast           " />
+
+            <RadioButton
+                android:id="@+id/fastF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeT"
+                android:layout_alignStart="@+id/safeT"
+                android:layout_below="@+id/safeT"
+                android:text="" />
+
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/challenging"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <RadioButton
+                android:id="@+id/challengingT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="phys challenging" />
+
+            <RadioButton
+                android:id="@+id/challengingF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeT"
+                android:layout_alignStart="@+id/safeT"
+                android:layout_below="@+id/safeT"
+                android:text="" />
+
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/recreational"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/recreationalT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeF"
+                android:layout_alignStart="@+id/safeF"
+                android:layout_below="@+id/safeF"
+                android:text="    recreational     " />
+
+            <RadioButton
+                android:id="@+id/recreationalF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/safeT"
+                android:text="" />
+
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/touristy"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/touristyT"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/safeF"
+                android:layout_alignStart="@+id/safeF"
+                android:layout_below="@+id/safeF"
+                android:text="        touristy         " />
+
+            <RadioButton
+                android:id="@+id/touristyF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/safeT"
+                android:text="" />
+
+        </RadioGroup>
+
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/saver"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/stats"
+        android:layout_centerHorizontal="true"
+        android:text="Save my session"
+        android:visibility="invisible" />
+
+
 </RelativeLayout>

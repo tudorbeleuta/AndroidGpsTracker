@@ -3,136 +3,77 @@ package com.example.tothe.myapplication.common;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.util.Base64;
+import android.widget.Toast;
 
-import org.json.JSONObject;
+import com.example.tothe.myapplication.MainActivity;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by tothe on 5/9/16.
  */
 public class HttpCommunicator extends AsyncTask<File, Void, String> {
 
+    public static final String DESCRIPTOR_CONTENT = "descriptor_content";
 
-    /*public void send() throws IOException {
+    public static final String DESCRIPTOR_NAME = "descriptor_name";
+
+    public static final String LOGGED_CONTENT = "logged_content";
+
+    public static final String LOGGED_NAME = "logged_name";
+
+    public static final String BASE_URL = "https://bootjava8-tudorb.rhcloud.com/";
+
+    public void multipartPost(File loggedFile) throws IOException {
 
 
-        URL url;
-        HttpURLConnection urlConn;
-        url = new URL("http://bootjava8-tudorb.rhcloud.com/");
-        urlConn = (HttpURLConnection) url.openConnection();
-        urlConn.setDoOutput(true);
-        urlConn.setRequestMethod("POST");
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        RequestParams params = new RequestParams();
+        try {
+
+            String fileContent = FileUtils.readFileToString(loggedFile.getAbsoluteFile());
+
+            params.put(DESCRIPTOR_NAME, loggedFile.getName());
+            params.put(DESCRIPTOR_CONTENT, fileContent);
 
 
+            params.put(LOGGED_NAME, "test");
+            params.put(LOGGED_CONTENT, "test content");
 
-        urlConn.connect();
-        OutputStream os = urlConn.getOutputStream();
-        os.flush();
-        os.close();
-
-        if (urlConn.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
-            throw new RuntimeException("Failed : HTTP error code : "
-                    + urlConn.getResponseCode());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-                (urlConn.getInputStream())));
-
-        String output;
-        System.out.println("Output from Server .... \n");
-        while ((output = br.readLine()) != null) {
-            System.out.println(output);
-        }
-
-        urlConn.disconnect();
-
-    }
-*/
-    public String multipartPost(File loggedFile) throws IOException {
-        HttpURLConnection httpUrlConnection = null;
-        URL url = new URL("http://bootjava8-tudorb.rhcloud.com/");
-        httpUrlConnection = (HttpURLConnection) url.openConnection();
-        httpUrlConnection.setUseCaches(false);
-        httpUrlConnection.setDoOutput(true);
-
-        httpUrlConnection.setRequestMethod("POST");
-        httpUrlConnection.setRequestProperty("Connection", "Keep-Alive");
-        httpUrlConnection.setRequestProperty("Cache-Control", "no-cache");
-        httpUrlConnection.setRequestProperty(
-                "Content-Type", "multipart/form-data;");
-
-        DataOutputStream request = new DataOutputStream(
-                httpUrlConnection.getOutputStream());
-
-        FileInputStream fileInputStream = new FileInputStream(loggedFile);
-
-        //request header start
-        String crlf = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
-
-        request.writeBytes(twoHyphens + boundary + crlf);
-        request.writeBytes("Content-Disposition: form-data; name=\"" +
-                loggedFile.getName() + "\";file=\"" +
-                loggedFile.getName() + "\"" + crlf);
-        request.writeBytes(crlf);
-
-        //request body, file
+        client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
 
 
-        byte[] buffer = new byte[1024];
-        int count = 0;
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Toast.makeText(MainActivity.getAppContext(), "Successfully uploaded!", Toast.LENGTH_SHORT).show();
+            }
 
-        while ((count = fileInputStream.read(buffer)) >= 0) {
-            request.write(buffer, 0, count);
-        }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(MainActivity.getAppContext(), "Failed to upload!", Toast.LENGTH_SHORT).show();
 
-        //request ending
-
-        request.writeBytes(crlf);
-        request.writeBytes(twoHyphens + boundary +
-                twoHyphens + crlf);
-        request.flush();
-        request.close();
-
-
-        InputStream responseStream = new
-                BufferedInputStream(httpUrlConnection.getInputStream());
-
-        BufferedReader responseStreamReader =
-                new BufferedReader(new InputStreamReader(responseStream));
-
-        String line = "";
-        StringBuilder stringBuilder = new StringBuilder();
-
-        while ((line = responseStreamReader.readLine()) != null) {
-            stringBuilder.append(line).append("\n");
-        }
-        responseStreamReader.close();
-
-        String response = stringBuilder.toString();
-
-        responseStream.close();
-
-        httpUrlConnection.disconnect();
-
-        return response;
+            }
+        });
 
     }
 
@@ -148,7 +89,7 @@ public class HttpCommunicator extends AsyncTask<File, Void, String> {
         String resp = "";
         for (File f : params) {
             try {
-                resp = multipartPost(f);
+                multipartPost(f);
             } catch (IOException e) {
                 e.printStackTrace();
             }

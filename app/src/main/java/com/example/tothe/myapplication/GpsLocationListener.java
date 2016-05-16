@@ -99,17 +99,17 @@ public class GpsLocationListener implements LocationListener {
         return true;
     }
 
-    public File stopGpsListen() {
+    public LogfileManager stopGpsListen() {
 
         checkGpsPermission();
 
-        File loggedFile = writer.getLogFile();
+        //File loggedFile = writer.getLogFile();
 
         locManager.removeUpdates(this);
 
         locManager = null;
 
-        return loggedFile;
+        return writer;
 
     }
 
