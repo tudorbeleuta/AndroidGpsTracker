@@ -1,13 +1,10 @@
 package com.example.tothe.myapplication;
 
-import android.app.ActionBar;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,13 +15,12 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 
 
+import com.example.tothe.myapplication.common.FilesystemManager;
 import com.example.tothe.myapplication.common.HttpCommunicator;
 import com.example.tothe.myapplication.models.SessionData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -50,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     TableLayout stats;
     LogfileManager logManager;
 
+
+    HttpCommunicator communicator = new HttpCommunicator();
+    FilesystemManager fsManager = new FilesystemManager();
     public static Context getAppContext() {
         return MainActivity.context;
     }
@@ -57,12 +56,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
+            case R.id.upload_delete:
+                logToServer(true);
                 return true;
 
-            case R.id.action_favorite:
-                logToServer();
+            case R.id.upload:
+                logToServer(false);
+                return true;
+
+            case R.id.clear_all:
+                deleteAll();
                 return true;
 
             default:
@@ -98,18 +101,23 @@ public class MainActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
 
         buttonLogger = (Button) findViewById(R.id.logger);
+        buttonLogger.setText("Start logging!");
         if (buttonLogger != null) {
             buttonLogger.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+
                     if (!isActive) {
-                        // buttonLogger.setText("Stop logging!");
+                        buttonLogger.setText("Listening, tap to stop...");
                         startGpsListen();
                     } else {
-                        //buttonLogger.setText("Start logging!");
+
+                        buttonLogger.setText("Start logging!");
                         stopGpsListen();
                     }
                     isActive = !isActive;
                 }
+
+
             });
         }
 
@@ -125,61 +133,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        buttonUploader = (Button) findViewById(R.id.uploader);
-        if (buttonUploader != null) {
-            buttonUploader.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    logToServer();
-                }
-            });
-        }
         // initViewComponents();
 
     }
-
-    private void initViewComponents() {
-        stats = (TableLayout) findViewById(R.id.stats);
-
-
-        buttonLogger = (Button) findViewById(R.id.logger);
-        if (buttonLogger != null) {
-            buttonLogger.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    if (!isActive) {
-                        buttonLogger.setText("Stop logging!");
-                        startGpsListen();
-                    } else {
-                        buttonLogger.setText("Start logging!");
-                        stopGpsListen();
-                    }
-                    isActive = !isActive;
-                }
-            });
-        }
-
-        buttonSave = (Button) findViewById(R.id.saver);
-
-
-        if (buttonLogger != null) {
-            buttonLogger.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    saveSession();
-                }
-            });
-        }
-
-
-        buttonUploader = (Button) findViewById(R.id.uploader);
-        if (buttonUploader != null) {
-            buttonUploader.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    logToServer();
-                }
-            });
-        }
-
-    }
-
 
     public void startGpsListen() {
 
@@ -240,17 +196,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void logToServer() {
+    private void logToServer(boolean deleteUploads) {
 
-        if (dataFiles != null) {
-            HttpCommunicator communicator = new HttpCommunicator();
+        // if (dataFiles != null) {
+
             try {
-                communicator.multipartPost(dataFiles);
+
+                communicator.postMultipleSessions(fsManager.getAllSessions(), deleteUploads);
+                //communicator.postSingleSession(dataFiles);
             } catch (Exception e) {
                 System.err.print(e.getStackTrace());
             }
-        }
+        //}
 
+    }
+
+    private void deleteAll() {
+        fsManager.deleteAllLogData();
     }
 
 }

@@ -16,12 +16,12 @@ public class SessionData {
     public static final String GPSLOGS = "GPSLogs";
     public static final String LOG_GPX = "-log.gpx";
     public static final String LOG_JSON = "-log.json";
+    public static String LOGGING_DIR;
     File logFile;
     File descriptor;
-    String loggingDir;
 
     public SessionData(String loggingDir) {
-        this.loggingDir = loggingDir;
+        LOGGING_DIR = loggingDir;
         String isoDateTime = GpxHelper.getIsoDateTime(new Date());
         logFile = newFileFormat(isoDateTime, LOG_GPX);
         descriptor = newFileFormat(isoDateTime, LOG_JSON);
@@ -29,9 +29,14 @@ public class SessionData {
 
     }
 
+    public SessionData(File logFile, File descriptor) {
+        this.logFile = logFile;
+        this.descriptor = descriptor;
+    }
+
 
     private File newFileFormat(String rootTitle, String format) {
-        File physFile = new File(Environment.getExternalStorageDirectory() + File.separator + loggingDir + File.separator + rootTitle + format);
+        File physFile = new File(Environment.getExternalStorageDirectory() + File.separator + LOGGING_DIR + File.separator + rootTitle + format);
         try {
             physFile.createNewFile();
         } catch (IOException e) {

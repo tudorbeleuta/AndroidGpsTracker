@@ -4,16 +4,24 @@
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
-        android:id="@+id/action_favorite"
+        android:id="@+id/upload"
         android:icon="@drawable/upload48"
         android:title="upload"
         app:showAsAction="ifRoom" />
 
     <!-- Settings, should always be in the overflow -->
+
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/upload_delete"
         android:icon="@drawable/menu48"
-        android:title="menu"
+        android:title="upload and delete data"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/clear_all"
+        android:icon="@drawable/menu48"
+        android:title="clear all app data"
+        app:showAsAction="never" />
+
 
 </menu>

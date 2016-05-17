@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -40,11 +41,16 @@ public class HttpCommunicator {
 
     public static final String BASE_URL = "https://bootjava8-tudorb.rhcloud.com/";
 
+    AsyncHttpClient client;
+    int requests;
+    boolean fullUpload;
 
-    public void multipartPost(SessionData data) throws IOException {
+    public HttpCommunicator() {
+        client = new AsyncHttpClient();
+    }
 
+    public void postSingleSession(SessionData data) {
 
-        AsyncHttpClient client = new AsyncHttpClient();
 
         RequestParams params = new RequestParams();
         try {
@@ -56,33 +62,98 @@ public class HttpCommunicator {
             params.put(DESCRIPTOR_CONTENT, FileUtils.readFileToString(data.getDescriptor().getAbsoluteFile()));
 
 
+
             client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
 
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Toast.makeText(MainActivity.getAppContext(), "Successfully uploaded!", Toast.LENGTH_SHORT).show();
+                    toastStatus("Successfully uploaded!");
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(MainActivity.getAppContext(), "Failed to upload!", Toast.LENGTH_SHORT).show();
-
+                    toastStatus("Failed to upload!");
                 }
             });
+
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.getAppContext(), "Failed to upload, could not find files!", Toast.LENGTH_SHORT).show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void toastStatus(String status) {
+        Toast.makeText(MainActivity.getAppContext(), status, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private boolean clearFiles(boolean fullDelete, List<SessionData> sessions) {
+
+        boolean successfullDel = true;
+        for (SessionData session : sessions) {
+            boolean deletedSession = fullDelete ? session.getLogged().delete() && session.getDescriptor().delete() : session.getDescriptor().delete();
+            if (!deletedSession) {
+                successfullDel = false;
+            }
+
+        }
+        return successfullDel;
+    }
+
+    public void postMultipleSessions(final List<SessionData> multipleData, final boolean fullDelete) {
+        RequestParams params;
+
+        requests = multipleData.size();
+        fullUpload = true;
+        for (SessionData data : multipleData) {
+            params = new RequestParams();
+
+            try {
+
+                params.put(LOGGED_NAME, data.getLogged().getName());
+                params.put(LOGGED_CONTENT, FileUtils.readFileToString(data.getLogged().getAbsoluteFile()));
+
+                params.put(DESCRIPTOR_NAME, data.getDescriptor().getName());
+                params.put(DESCRIPTOR_CONTENT, FileUtils.readFileToString(data.getDescriptor().getAbsoluteFile()));
+
+
+                client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
+
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        requests--;
+                        toastStatus("Are files are uploaded. Thanks!");
+                        clearFiles(fullDelete, multipleData);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        toastStatus("Failed to upload some files, please check your connection!");
+                        fullUpload = false;
+                    }
+                });
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.getAppContext(), "Failed to upload, could not find files!", Toast.LENGTH_SHORT).show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
         }
 
 
 
     }
-
-
-
 
 
 }

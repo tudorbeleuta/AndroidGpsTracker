@@ -31,39 +31,30 @@
         android:layout_centerVertical="true"
         android:text="Log my coords" />
 
-    <Button
-        android:id="@+id/uploader"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:text="Upload to server"
-        android:visibility="gone" />
 
     <TableLayout
         android:id="@+id/stats"
-        android:layout_width="wrap_content"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
 
         android:animateLayoutChanges="true"
         android:background="@color/colorPrimary"
+
+        android:shrinkColumns="0"
+        android:stretchColumns="0"
         android:visibility="gone">
 
         <TableRow>
 
-            <TextView android:text="Yeah" />
+            <TextView android:text="Yes" />
 
             <TextView />
 
             <TextView
                 android:layout_alignParentRight="true"
-                android:layout_marginLeft="100dp"
+
                 android:text="Nope" />
         </TableRow>
 
@@ -80,10 +71,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
 
-                android:layout_centerVertical="true"
-                android:text="          safe             " />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="safe" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
 
             <RadioButton
                 android:id="@+id/safeF"
@@ -92,10 +99,65 @@
                 android:layout_alignLeft="@+id/safeT"
                 android:layout_alignStart="@+id/safeT"
                 android:layout_below="@+id/safeT"
+                android:layout_gravity="right"
                 android:text="" />
 
 
         </RadioGroup>
+
+        <!--
+                <RadioGroup
+                    android:id="@+id/safe"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <RadioButton
+                        android:id="@+id/safeT"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerHorizontal="true"
+
+                        android:layout_centerVertical="true"
+                         />
+
+
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="alada"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="crowded"/>
+
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="alada"
+                        />
+
+
+                    <RadioButton
+                        android:id="@+id/safeF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/safeT"
+                        android:layout_alignStart="@+id/safeT"
+                        android:layout_marginLeft="43dp"
+                        android:layout_below="@+id/safeT"
+                        android:text="" />
+
+
+                </RadioGroup>
+        -->
 
         <RadioGroup
             android:id="@+id/crowded"
@@ -110,8 +172,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:text="        crowded       " />
+                android:layout_centerVertical="true" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="crowded" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
 
             <RadioButton
                 android:id="@+id/crowdedF"
@@ -120,6 +200,7 @@
                 android:layout_alignLeft="@+id/safeT"
                 android:layout_alignStart="@+id/safeT"
                 android:layout_below="@+id/safeT"
+                android:layout_gravity="right"
                 android:text="" />
 
 
@@ -138,8 +219,25 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:text="            fast           " />
+                android:layout_centerVertical="true" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="fast" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
 
             <RadioButton
                 android:id="@+id/fastF"
@@ -166,8 +264,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:text="phys challenging" />
+                android:layout_centerVertical="true" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="phys. challenging" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
 
             <RadioButton
                 android:id="@+id/challengingF"
@@ -193,9 +309,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/safeF"
                 android:layout_alignStart="@+id/safeF"
-                android:layout_below="@+id/safeF"
-                android:text="    recreational     " />
+                android:layout_below="@+id/safeF" />
 
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="recreational" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
             <RadioButton
                 android:id="@+id/recreationalF"
                 android:layout_width="wrap_content"
@@ -219,8 +352,26 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/safeF"
                 android:layout_alignStart="@+id/safeF"
-                android:layout_below="@+id/safeF"
-                android:text="        touristy         " />
+                android:layout_below="@+id/safeF" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="touristy" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="alada" />
 
             <RadioButton
                 android:id="@+id/touristyF"
