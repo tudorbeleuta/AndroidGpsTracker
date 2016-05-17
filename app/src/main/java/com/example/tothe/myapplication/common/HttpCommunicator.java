@@ -7,6 +7,7 @@ import android.util.Base64;
 import android.widget.Toast;
 
 import com.example.tothe.myapplication.MainActivity;
+import com.example.tothe.myapplication.models.SessionData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -27,7 +28,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by tothe on 5/9/16.
  */
-public class HttpCommunicator extends AsyncTask<File, Void, String> {
+public class HttpCommunicator {
 
     public static final String DESCRIPTOR_CONTENT = "descriptor_content";
 
@@ -39,7 +40,8 @@ public class HttpCommunicator extends AsyncTask<File, Void, String> {
 
     public static final String BASE_URL = "https://bootjava8-tudorb.rhcloud.com/";
 
-    public void multipartPost(File loggedFile) throws IOException {
+
+    public void multipartPost(SessionData data) throws IOException {
 
 
         AsyncHttpClient client = new AsyncHttpClient();
@@ -47,61 +49,39 @@ public class HttpCommunicator extends AsyncTask<File, Void, String> {
         RequestParams params = new RequestParams();
         try {
 
-            String fileContent = FileUtils.readFileToString(loggedFile.getAbsoluteFile());
+            params.put(LOGGED_NAME, data.getLogged().getName());
+            params.put(LOGGED_CONTENT, FileUtils.readFileToString(data.getLogged().getAbsoluteFile()));
 
-            params.put(DESCRIPTOR_NAME, loggedFile.getName());
-            params.put(DESCRIPTOR_CONTENT, fileContent);
+            params.put(DESCRIPTOR_NAME, data.getDescriptor().getName());
+            params.put(DESCRIPTOR_CONTENT, FileUtils.readFileToString(data.getDescriptor().getAbsoluteFile()));
 
 
-            params.put(LOGGED_NAME, "test");
-            params.put(LOGGED_CONTENT, "test content");
+            client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
+
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    Toast.makeText(MainActivity.getAppContext(), "Successfully uploaded!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    Toast.makeText(MainActivity.getAppContext(), "Failed to upload!", Toast.LENGTH_SHORT).show();
+
+                }
+            });
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            Toast.makeText(MainActivity.getAppContext(), "Failed to upload, could not find files!", Toast.LENGTH_SHORT).show();
+
         }
 
-        client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
 
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Toast.makeText(MainActivity.getAppContext(), "Successfully uploaded!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(MainActivity.getAppContext(), "Failed to upload!", Toast.LENGTH_SHORT).show();
-
-            }
-        });
 
     }
 
 
-
-    private String getFileContent(File f) {
-        return null;
-    }
-
-    @Override
-    protected String doInBackground(File... params) {
-
-        String resp = "";
-        for (File f : params) {
-            try {
-                multipartPost(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return resp;
-
-    }
-
-    public String writeFiles(File... files) {
-        return doInBackground(files);
-    }
 
 
 

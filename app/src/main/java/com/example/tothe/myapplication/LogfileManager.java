@@ -1,74 +1,93 @@
 package com.example.tothe.myapplication;
 
 import android.location.Location;
-import android.os.Environment;
 
 import com.example.tothe.myapplication.common.GpxHelper;
+import com.example.tothe.myapplication.models.SessionData;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.Date;
 
 public class LogfileManager {
-    protected final static Object lock = new Object();
 
+    public static final String LOG_REF = "log-ref";
+    public static final String DEVICE_NAME = "device_name";
+    public static final String GICA = "gica";
+    SessionData sessionFiles;
 
-    JSONArray log_data;
-    File logFile;
-
-    boolean init;
 
     public LogfileManager() {
-
-        logFile = new File(Environment.getExternalStorageDirectory() + File.separator + "GPSLogs" + File.separator + GpxHelper.getIsoDateTime(new Date()) + "-log.json");
-        log_data = new JSONArray();
-        init = false;
+        sessionFiles = new SessionData(SessionData.GPSLOGS);
     }
 
-    public void appendLog(Location loc) {
+    public LogfileManager(SessionData data) {
+        this.sessionFiles = data;
+    }
+
+
+    public void initGPX() {
+
+        try {
+            GpxHelper.writeToFile(sessionFiles.getLogged(), GpxHelper.getGpxHeader());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
-    public void writeToFile(Location loc) {
-        if (!logFile.exists()) {
+    public void logCoords(Location loc) throws IOException {
+
+        GpxHelper.writeToFile(sessionFiles.getLogged(), GpxHelper.locationToGpx(loc));
+
+    }
+
+
+    public void terminateGPX() {
+
+        if (sessionFiles.getLogged().getFreeSpace() != sessionFiles.getLogged().getTotalSpace())
             try {
-
-                logFile.createNewFile();
-                GpxHelper.addToMediaDatabase(logFile);
-                // GpxHelper.writeToFile(logFile,GpxHelper.fileInit());
-                GpxHelper.writeToFile(logFile, "data=[");
-                init = true;
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        try {
-            if (init) {
-
-            }
-            GpxHelper.writeToFile(logFile, GpxHelper.getTrackJson(loc).toString() + ",\n");
-            //GpxHelper.writeToFile(logFile,GpxHelper.getTrackPointXml(loc));
+                GpxHelper.writeToFile(sessionFiles.getLogged(), GpxHelper.getGpxFooter());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
+
+    //write session description data to json file
     public void setStats(JSONObject stats) {
+
+        JSONObject fileDesc = null;
         try {
-            GpxHelper.writeToFile(logFile, "];\n" + stats.toString());
+            fileDesc = addLoggerToDescriptor();
+            fileDesc.put(DEVICE_NAME, MainActivity.android_id);
+            fileDesc.put("stats", stats);
+            fileDesc.put("time", new Date());
+            //....? should add some others
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            GpxHelper.writeToFile(sessionFiles.getDescriptor(), fileDesc.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public File getLogFile() {
-        return logFile;
+    public JSONObject addLoggerToDescriptor() throws JSONException {
+        JSONObject resp = new JSONObject();
+        resp.put(LOG_REF, sessionFiles.getLogged().getName());
+        return resp;
+    }
+
+
+    public SessionData sessionData() {
+        return sessionFiles;
     }
 
 

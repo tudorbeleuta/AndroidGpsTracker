@@ -7,8 +7,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import java.io.File;
-
 /**
  * Created by tothe on 5/3/16.
  */
@@ -50,7 +48,7 @@ public class GpsLocationListener implements LocationListener {
                 b.putInt("SATELLITES_FIX", satellitesUsedInFix);
 
                 loc.setExtras(b);
-                writer.writeToFile(loc);
+                writer.logCoords(loc);
                 this.latestHdop = "";
                 this.latestPdop = "";
                 this.latestVdop = "";
@@ -92,6 +90,7 @@ public class GpsLocationListener implements LocationListener {
     }
 
     public boolean startListening() {
+        writer.initGPX();
         if (!checkGpsPermission()) {
             return false;
         }
@@ -108,6 +107,8 @@ public class GpsLocationListener implements LocationListener {
         locManager.removeUpdates(this);
 
         locManager = null;
+
+        writer.terminateGPX();
 
         return writer;
 

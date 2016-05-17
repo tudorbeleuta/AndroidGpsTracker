@@ -57,20 +57,20 @@ public class GpxHelper {
         return getIsoDateTime(new Date(time));
     }
 
-    public static String fileInit() {
+    public static String getGpxHeader() {
 
         StringBuilder initialXml = new StringBuilder();
         initialXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-        initialXml.append("<gpx version=\"1.0\" creator=\"TudorBeleuta " + BuildConfig.VERSION_NAME + " -");
+        initialXml.append("<gpx version=\"1.0\" creator=\"TudorBeleuta \" ");
         initialXml.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
         initialXml.append("xmlns=\"http://www.topografix.com/GPX/1/0\" ");
         initialXml.append("xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 ");
         initialXml.append("http://www.topografix.com/GPX/1/0/gpx.xsd\">");
-        initialXml.append("<time>").append(getIsoDateTime(new Date())).append("</time>").append("<trk></trk></gpx>");
+        initialXml.append("<time>").append(getIsoDateTime(new Date())).append("</time>").append("<trk><trkseg>");
         return initialXml.toString();
     }
 
-    public static String getTrackPointXml(Location loc) {
+    public static String locationToGpx(Location loc) {
 
         String dateTimeString = getDateTimeString(loc);
 
@@ -81,19 +81,19 @@ public class GpxHelper {
                 .append("\" lon=\"")
                 .append(String.valueOf(loc.getLongitude()))
                 .append("\">");
-
-
-        track.append("<time>").append(dateTimeString).append("</time>");
-
         if (loc.hasSpeed()) {
             track.append("<speed>").append(String.valueOf(loc.getSpeed())).append("</speed>");
         }
 
         track.append("</trkpt>\n");
 
-        track.append("</trkseg></trk></gpx>");
+        //track.append("</trkseg>");
 
         return track.toString();
+    }
+
+    public static String getGpxFooter() {
+        return "</trkseg></trk></gpx>";
     }
 
     public static JSONObject getTrackJson(Location loc) {
