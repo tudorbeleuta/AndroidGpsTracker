@@ -58,7 +58,7 @@ public class LogfileManager {
 
 
     //write session description data to json file
-    public void setStats(JSONObject stats) {
+    public void setStats(JSONObject stats, JSONObject userDetails) {
 
         JSONObject fileDesc = null;
         try {
@@ -66,6 +66,9 @@ public class LogfileManager {
             fileDesc.put(DEVICE_NAME, MainActivity.android_id);
             fileDesc.put("stats", stats);
             fileDesc.put("time", new Date());
+            if (userDetails != null) {
+                fileDesc.put("userdetails", userDetails);
+            }
             //....? should add some others
         } catch (JSONException e) {
             e.printStackTrace();

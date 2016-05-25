@@ -28,6 +28,8 @@ import com.tothe.tothe.bikeLogger.storage.DbHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -203,8 +205,9 @@ public class MainActivity extends AppCompatActivity {
     private void saveSession() {
 
         if (logManager != null) {
+            User user = database.getLastUserDetail();
+            logManager.setStats(jsonStats(), user.getJson());
 
-                logManager.setStats(jsonStats());
             dataFiles = logManager.sessionData();
 
         }
@@ -272,10 +275,17 @@ public class MainActivity extends AppCompatActivity {
 
                 TextView emailtv = (TextView) profileView.findViewById(R.id.email);
 
-                database.addUser(new User(nametv.getText().toString(), emailtv.getText().toString()));
-                Toast.makeText(MainActivity.getAppContext(), database.getAllContacts().toString(), Toast.LENGTH_SHORT).show();
+                if (emailtv.getText().toString().isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(emailtv.getText().toString()).matches()) {
+                    Toast.makeText(MainActivity.getAppContext(), "Please set your email!", Toast.LENGTH_SHORT).show();
+                } else if (nametv.getText().toString().isEmpty()) {
+                    Toast.makeText(MainActivity.getAppContext(), "Please set your name!", Toast.LENGTH_SHORT).show();
 
-                dialog.dismiss();
+                } else {
+                    database.singleInsert(new User(nametv.getText().toString(), emailtv.getText().toString()));
+                    dialog.dismiss();
+                }
+
+
             }
         });
         builder.setNegativeButton("Cancel,", new DialogInterface.OnClickListener() {

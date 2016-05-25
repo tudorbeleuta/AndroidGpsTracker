@@ -54,18 +54,20 @@ public class DbHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
-        //   db.execSQL("SELECT name FROM sqlite_master WHERE type='table' AND name='USER_DETAILS';");
-        Cursor c = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-
-        if (c.moveToFirst()) {
-            while (!c.isAfterLast()) {
-                //       Toast.makeText(activityName.this, "Table Name=> "+c.getString(0), Toast.LENGTH_LONG).show();
-                c.moveToNext();
-            }
-        }
         long id = db.insert(USER_DETAILS, null, user.getContentValues());
         Log.i("db details update", String.valueOf(id));
     }
+
+    //clears previus user details to uniquely save the new one
+    public void singleInsert(User user) {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + USER_DETAILS);
+        long id = db.insert(USER_DETAILS, null, user.getContentValues());
+        Log.i("db details update", String.valueOf(id));
+    }
+
 
     public List<User> getAllContacts() {
         List<User> users = new ArrayList<User>();
@@ -89,6 +91,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
         // return contact list
         return users;
+    }
+
+    public User getLastUserDetail() {
+        List<User> users = getAllContacts();
+        if (users.size() > 0) {
+            return users.get(users.size() - 1);
+        } else return null;
     }
 
 }

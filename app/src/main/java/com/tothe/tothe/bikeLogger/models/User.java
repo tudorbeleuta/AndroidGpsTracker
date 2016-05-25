@@ -4,6 +4,9 @@ import android.content.ContentValues;
 
 import com.tothe.tothe.bikeLogger.storage.DbHelper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by tothe on 5/25/16.
  */
@@ -61,5 +64,20 @@ public class User {
         values.put(USER_NAME, name);
 
         return values;
+    }
+
+    public JSONObject getJson() {
+        JSONObject details = new JSONObject();
+        if (email == null || email.isEmpty()) {
+            return null;
+        }
+        try {
+            details.put("useremail", email);
+            details.put("username", name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return details;
     }
 }
