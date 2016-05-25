@@ -1,8 +1,8 @@
-package com.example.tothe.myapplication.common;
+package com.tothe.tothe.bikeLogger.common;
 
 import android.os.Environment;
 
-import com.example.tothe.myapplication.models.SessionData;
+import com.tothe.tothe.bikeLogger.models.SessionData;
 
 import java.io.File;
 import java.io.FilenameFilter;

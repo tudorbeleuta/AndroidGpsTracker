@@ -1,4 +1,4 @@
-package com.example.tothe.myapplication;
+package com.tothe.tothe.bikeLogger;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -94,7 +94,7 @@ public class GpsLocationListener implements LocationListener {
         if (!checkGpsPermission()) {
             return false;
         }
-        locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, this);
         return true;
     }
 

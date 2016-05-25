@@ -1,4 +1,4 @@
-package com.example.tothe.myapplication;
+package com.tothe.tothe.bikeLogger;
 
 import io.socket.client.*;
 import io.socket.emitter.Emitter;

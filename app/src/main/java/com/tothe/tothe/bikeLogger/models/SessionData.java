@@ -1,8 +1,8 @@
-package com.example.tothe.myapplication.models;
+package com.tothe.tothe.bikeLogger.models;
 
 import android.os.Environment;
 
-import com.example.tothe.myapplication.common.GpxHelper;
+import com.tothe.tothe.bikeLogger.common.GpxHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,13 @@ public class SessionData {
 
 
     private File newFileFormat(String rootTitle, String format) {
-        File physFile = new File(Environment.getExternalStorageDirectory() + File.separator + LOGGING_DIR + File.separator + rootTitle + format);
+        File dirFile = new File(Environment.getExternalStorageDirectory() + File.separator + GPSLOGS);
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+
+            dirFile.mkdir();
+
+        }
+        File physFile = new File(Environment.getExternalStorageDirectory() + File.separator + GPSLOGS + File.separator + rootTitle + format);
         try {
             physFile.createNewFile();
         } catch (IOException e) {

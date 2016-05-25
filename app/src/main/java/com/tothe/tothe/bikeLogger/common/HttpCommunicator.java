@@ -1,27 +1,17 @@
-package com.example.tothe.myapplication.common;
+package com.tothe.tothe.bikeLogger.common;
 
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.widget.Toast;
 
-import com.example.tothe.myapplication.MainActivity;
-import com.example.tothe.myapplication.models.SessionData;
+import com.tothe.tothe.bikeLogger.MainActivity;
+import com.tothe.tothe.bikeLogger.models.SessionData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -123,7 +113,7 @@ public class HttpCommunicator {
                 params.put(DESCRIPTOR_NAME, data.getDescriptor().getName());
                 params.put(DESCRIPTOR_CONTENT, FileUtils.readFileToString(data.getDescriptor().getAbsoluteFile()));
 
-
+                //   client.cancelAllRequests(true);
                 client.post(BASE_URL, params, new AsyncHttpResponseHandler() {
 
 
@@ -133,6 +123,7 @@ public class HttpCommunicator {
                         toastStatus("Are files are uploaded. Thanks!");
                         clearFiles(fullDelete, multipleData);
                     }
+
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {

@@ -1,6 +1,6 @@
-package com.example.tothe.myapplication;
+package com.tothe.tothe.bikeLogger;
 
-import com.example.tothe.myapplication.common.Strings;
+import com.tothe.tothe.bikeLogger.common.Strings;
 
 /**
  * Created by tothe on 5/4/16.

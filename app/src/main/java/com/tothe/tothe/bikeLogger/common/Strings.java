@@ -1,4 +1,4 @@
-package com.example.tothe.myapplication.common;
+package com.tothe.tothe.bikeLogger.common;
 
 /**
  * Created by tothe on 5/4/16.

@@ -1,23 +1,29 @@
-package com.example.tothe.myapplication;
+package com.tothe.tothe.bikeLogger;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.example.tothe.myapplication.common.FilesystemManager;
-import com.example.tothe.myapplication.common.HttpCommunicator;
-import com.example.tothe.myapplication.models.SessionData;
+import com.tothe.tothe.bikeLogger.common.FilesystemManager;
+import com.tothe.tothe.bikeLogger.common.HttpCommunicator;
+import com.tothe.tothe.bikeLogger.models.SessionData;
+import com.tothe.tothe.bikeLogger.models.User;
+import com.tothe.tothe.bikeLogger.storage.DbHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static LogfileManager writer;
     public static String android_id;
-    static Boolean isActive = false;
+    static Boolean listens = false;
+    static boolean waitingForSave = false;
     private static Context context;
     protected String latestHdop;
     protected String latestPdop;
@@ -45,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
     Button buttonUploader;
     TableLayout stats;
     LogfileManager logManager;
-
-
-    HttpCommunicator communicator = new HttpCommunicator();
-    FilesystemManager fsManager = new FilesystemManager();
+    DbHelper database;
+    //AlertDialog.Builder dialog;
+    AlertDialog profileDialog;
+    AlertDialog dialog;
     public static Context getAppContext() {
         return MainActivity.context;
     }
@@ -66,6 +73,15 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.clear_all:
                 deleteAll();
+                return true;
+
+            case R.id.about:
+                dialog.show();
+                //infoDialog.show();
+                return true;
+            case R.id.profile:
+                profileDialog.show();
+                //infoDialog.show();
                 return true;
 
             default:
@@ -86,16 +102,24 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        super.setTitle("Gps Logger");
+        super.setTitle("Route on bike");
         setContentView(R.layout.activity_main);
         MainActivity.context = getApplicationContext();
         stats = (TableLayout) findViewById(R.id.stats);
 
-
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+
+        dialog = initDialog();
+        profileDialog = initProfileDialog();
+        //infoDialog=new InfoDialog().getDialog();
+//        initDialog();
         //myToolbar.h
+        database = new DbHelper(this);
+
 
         android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -106,7 +130,8 @@ public class MainActivity extends AppCompatActivity {
             buttonLogger.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
 
-                    if (!isActive) {
+                    listens = !listens;
+                    if (listens) {
                         buttonLogger.setText("Listening, tap to stop...");
                         startGpsListen();
                     } else {
@@ -114,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                         buttonLogger.setText("Start logging!");
                         stopGpsListen();
                     }
-                    isActive = !isActive;
+
                 }
 
 
@@ -127,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         if (buttonSave != null) {
             buttonSave.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    waitingForSave = false;
                     saveSession();
                 }
             });
@@ -135,6 +161,15 @@ public class MainActivity extends AppCompatActivity {
 
         // initViewComponents();
 
+    }
+
+
+    protected void onDestroy() {
+        if (listens) {
+            stopGpsListen();
+            saveSession();
+        }
+        super.onDestroy();
     }
 
     public void startGpsListen() {
@@ -146,11 +181,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopGpsListen() {
-
+        waitingForSave = true;
         stats.setVisibility(View.VISIBLE);
         buttonSave.setVisibility(View.VISIBLE);
         buttonLogger.setVisibility(View.GONE);
-        //loggedFile = locListener.stopGpsListen();
+
         logManager = locListener.stopGpsListen();
 
         locListener = null;
@@ -197,22 +232,80 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void logToServer(boolean deleteUploads) {
+        if (waitingForSave) {
+            saveSession();
+        }
+        HttpCommunicator communicator = new HttpCommunicator();
+        FilesystemManager fsManager = new FilesystemManager();
 
-        // if (dataFiles != null) {
 
-            try {
+        try {
 
                 communicator.postMultipleSessions(fsManager.getAllSessions(), deleteUploads);
                 //communicator.postSingleSession(dataFiles);
             } catch (Exception e) {
                 System.err.print(e.getStackTrace());
             }
-        //}
 
     }
 
     private void deleteAll() {
+        FilesystemManager fsManager = new FilesystemManager();
         fsManager.deleteAllLogData();
+    }
+
+
+    private AlertDialog initProfileDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        final View profileView = inflater.inflate(R.layout.dialog_details, null);
+        builder.setView(profileView)
+                .setTitle("Your profile");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                TextView nametv = (TextView) profileView.findViewById(R.id.name);
+
+                TextView emailtv = (TextView) profileView.findViewById(R.id.email);
+
+                database.addUser(new User(nametv.getText().toString(), emailtv.getText().toString()));
+                Toast.makeText(MainActivity.getAppContext(), database.getAllContacts().toString(), Toast.LENGTH_SHORT).show();
+
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("Cancel,", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        // 3. Get the AlertDialog from create()
+        return builder.create();
+
+    }
+
+
+    private AlertDialog initDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        // 2. Chain together various setter methods to set the dialog characteristics
+        builder.setMessage(R.string.app_description)
+                .setTitle("About");
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+        // 3. Get the AlertDialog from create()
+        return builder.create();
+
     }
 
 }

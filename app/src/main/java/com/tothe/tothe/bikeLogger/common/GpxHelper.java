@@ -1,10 +1,9 @@
-package com.example.tothe.myapplication.common;
+package com.tothe.tothe.bikeLogger.common;
 
 import android.location.Location;
 import android.media.MediaScannerConnection;
 
-import com.example.tothe.myapplication.BuildConfig;
-import com.example.tothe.myapplication.MainActivity;
+import com.tothe.tothe.bikeLogger.MainActivity;
 
 
 import org.json.JSONException;
@@ -84,7 +83,7 @@ public class GpxHelper {
         if (loc.hasSpeed()) {
             track.append("<speed>").append(String.valueOf(loc.getSpeed())).append("</speed>");
         }
-
+        track.append("<time>" + getDateTimeString(loc) + "</time>");
         track.append("</trkpt>\n");
 
         //track.append("</trkseg>");

@@ -1,9 +1,9 @@
-package com.example.tothe.myapplication;
+package com.tothe.tothe.bikeLogger;
 
 import android.location.Location;
 
-import com.example.tothe.myapplication.common.GpxHelper;
-import com.example.tothe.myapplication.models.SessionData;
+import com.tothe.tothe.bikeLogger.common.GpxHelper;
+import com.tothe.tothe.bikeLogger.models.SessionData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +15,7 @@ public class LogfileManager {
 
     public static final String LOG_REF = "log-ref";
     public static final String DEVICE_NAME = "device_name";
-    public static final String GICA = "gica";
+
     SessionData sessionFiles;
 
 

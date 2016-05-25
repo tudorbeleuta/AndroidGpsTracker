@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Bike Logger</string>
+    <string name="app_name">Bike Tracker</string>
+    <string name="info_ok">Ok, go back</string>
+    <string name="app_description">Hi, if you have any kind of questions/suggestions/ideas, you can find me at \n tudor.beleuta@gmail.com \n\n Check out your GPX tracks that are saved locally under "GPSLogs" folder.\n\n\n Enjoy your rides :)</string>
 </resources>
