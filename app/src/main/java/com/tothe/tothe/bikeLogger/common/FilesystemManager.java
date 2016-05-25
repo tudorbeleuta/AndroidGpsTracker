@@ -15,6 +15,8 @@ import java.util.List;
 public class FilesystemManager {
 
 
+    public static final int MIN_GPX_FILESIZE = 345;
+
     private String filterRootName(String filename) {
         int index = filename.lastIndexOf(SessionData.LOG_JSON);
         if (index >= 0) {
@@ -33,8 +35,9 @@ public class FilesystemManager {
         return null;
     }
 
-    //gets all sessions that have an associated file descriptor
-    public List<SessionData> getAllSessionData(File... descriptors) {
+    //gets all sessions that have an associated file descriptor and are above a certain size in bytes
+
+    public List<SessionData> getAllSessionData(int fileByteSize, File... descriptors) {
 
         List<SessionData> sessions = new ArrayList<SessionData>();
 
@@ -44,8 +47,12 @@ public class FilesystemManager {
             String rootName = filterRootName(desc.getName());
             if (rootName != null) {
                 File gpx = getAssociatedGpx(desc.getParentFile(), rootName);
-                if (gpx != null) {
+                if (gpx != null && gpx.length() > fileByteSize) {
                     sessions.add(new SessionData(gpx, desc));
+                } else {
+                    //gpx.delete();
+                    //will delete the descriptor for noncorresponding file
+                    desc.delete();
                 }
             }
         }
@@ -65,15 +72,17 @@ public class FilesystemManager {
             }
         });
 
-        return getAllSessionData(listOfFiles);
+        return getAllSessionData(MIN_GPX_FILESIZE, listOfFiles);
 
     }
 
     public void deleteAllLogData() {
         File folder = new File(Environment.getExternalStorageDirectory() + File.separator + SessionData.GPSLOGS);
-
-        for (File f : folder.listFiles()) {
-            f.delete();
+        if (folder.exists()) {
+            for (File f : folder.listFiles()) {
+                f.delete();
+            }
         }
+
     }
 }
