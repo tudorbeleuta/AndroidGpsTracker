@@ -1,6 +1,6 @@
 # AndroidGpsTracker
 
-This is a lightweight GPS logger. It is meant to easily enable users to track ther cycling sessions.
+This is a lightweight GPS logger. It allows users to track their routes easily, storing their sessions locally or uploading them to a central store.
 
 ## Description
 TODO
