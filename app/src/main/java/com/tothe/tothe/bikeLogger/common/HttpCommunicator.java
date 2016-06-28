@@ -29,14 +29,14 @@ public class HttpCommunicator {
 
     public static final String LOGGED_NAME = "logged_name";
 
-    public static final String BASE_URL = "https://bootjava8-tudorb.rhcloud.com/";
+    public static final String BASE_URL = "http://biketracker.space/";
 
     AsyncHttpClient client;
     int requests;
     boolean fullUpload;
 
     public HttpCommunicator() {
-        client = new AsyncHttpClient();
+        client = new AsyncHttpClient(false, 80, 80);
     }
 
     public void postSingleSession(SessionData data) {
