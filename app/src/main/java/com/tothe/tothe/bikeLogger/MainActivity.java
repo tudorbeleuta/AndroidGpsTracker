@@ -1,10 +1,13 @@
 package com.tothe.tothe.bikeLogger;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -21,14 +24,13 @@ import android.widget.Toast;
 
 import com.tothe.tothe.bikeLogger.common.FilesystemManager;
 import com.tothe.tothe.bikeLogger.common.HttpCommunicator;
+import com.tothe.tothe.bikeLogger.common.PermissionManager;
 import com.tothe.tothe.bikeLogger.models.SessionData;
 import com.tothe.tothe.bikeLogger.models.User;
 import com.tothe.tothe.bikeLogger.storage.DbHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -62,15 +64,16 @@ public class MainActivity extends AppCompatActivity {
         return MainActivity.context;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.upload_delete:
-                logToServer(true);
+                uploadToServer(true);
                 return true;
 
             case R.id.upload:
-                logToServer(false);
+                uploadToServer(false);
                 return true;
 
             case R.id.clear_all:
@@ -92,6 +95,73 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+
+        boolean write = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean read = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        boolean gpsListen = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED;
+
+        switch (requestCode) {
+            case PermissionManager.REQUEST_CODE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!listens && write && read) {
+                        locListener = new GpsLocationListener(new String("fileLogger"), (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+                        locListener.startListening();
+                    }
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(MainActivity.getAppContext(), "No gps permissions!", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            case PermissionManager.REQUEST_CODE_INTERNET: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    uploadToServer(true);
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(MainActivity.getAppContext(), "No internet permissions!", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            case PermissionManager.REQUEST_CODE_STORAGE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (!listens && gpsListen) {
+                        locListener = new GpsLocationListener(new String("fileLogger"), (LocationManager) getSystemService(Context.LOCATION_SERVICE));
+                        locListener.startListening();
+                    }
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(MainActivity.getAppContext(), "No storage permissions!", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+        }
+
     }
 
 
@@ -176,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startGpsListen() {
 
+
+        if (PermissionManager.checkFilewritePermission(this) && PermissionManager.checkGpsPermission(this))
         locListener = new GpsLocationListener(new String("fileLogger"), (LocationManager) getSystemService(Context.LOCATION_SERVICE));
         locListener.startListening();
 
@@ -234,23 +306,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void logToServer(boolean deleteUploads) {
+    private void uploadToServer(boolean deleteUploads) {
+
         if (waitingForSave) {
             saveSession();
         }
-        HttpCommunicator communicator = new HttpCommunicator();
-        FilesystemManager fsManager = new FilesystemManager();
+        if (PermissionManager.checkInternetPermission(this)) {
 
+            HttpCommunicator communicator = new HttpCommunicator();
+            FilesystemManager fsManager = new FilesystemManager();
 
-        try {
+            try {
 
                 communicator.postMultipleSessions(fsManager.getAllSessions(), deleteUploads);
                 //communicator.postSingleSession(dataFiles);
             } catch (Exception e) {
                 System.err.print(e.getStackTrace());
             }
+        }
 
     }
+
 
     private void deleteAll() {
         FilesystemManager fsManager = new FilesystemManager();
@@ -317,5 +393,6 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
 
     }
+
 
 }

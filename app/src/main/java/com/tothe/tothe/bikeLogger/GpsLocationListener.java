@@ -82,11 +82,7 @@ public class GpsLocationListener implements LocationListener {
 
     private boolean checkGpsPermission() {
         int perm = MainActivity.getAppContext().checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION");
-        if (perm != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(MainActivity.getAppContext(), "no gps permissions", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        return true;
+        return perm == PackageManager.PERMISSION_GRANTED;
     }
 
     public boolean startListening() {
