@@ -120,7 +120,7 @@ public class HttpCommunicator {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                         requests--;
-                        toastStatus("Are files are uploaded. Thanks!");
+                        toastStatus("All files are uploaded. Thanks!");
                         clearFiles(fullDelete, multipleData);
                     }
 
